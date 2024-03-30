@@ -132,7 +132,7 @@ def settings():
         tools=tools,
         verbose=True,
         handle_parsing_errors=True,
-        max_iterations=5,
+        max_iterations=10,
     )
     return agent_executor
 
@@ -140,12 +140,10 @@ if __name__ == "__main__":
     agent_executor = settings()
     while True:
         question = input("Enter your question: ")
-        # input1 = "Translate this sentence from English to French: I love programming."
-        # demo_ephemeral_chat_history.add_user_message(question)
+
         if question.lower() != "quit":
             output = agent_executor.invoke(
                 {"input": question},
-                # callbacks=[retrieval_streamer_cb, stream_handler],
             )
 
             # answer.info("`Answer:`\n\n" + output)
