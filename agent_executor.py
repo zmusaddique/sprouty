@@ -27,7 +27,7 @@ def settings():
 
     persist_directory = "local_vectorstore"
     collection_name = "crop_management"
-    PROJECT_ROOT = "FarmerBot"  # insert your project root directory name here
+    PROJECT_ROOT = "./"  # insert your project root directory name here
 
     vectorstore = Chroma.from_documents(
         documents=pages,
