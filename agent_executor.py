@@ -14,13 +14,17 @@ from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
 from dotenv import load_dotenv
 
-load_dotenv()
+# To resolve streamlit sqlite3 issue
+__import__("pysqlite3")
+import sys
 
+sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+
+load_dotenv()
 
 
 def settings():
     embeddings = HuggingFaceHubEmbeddings()
-
 
     loader = PyPDFLoader("./crop-management-AR-2011-12.pdf")
     pages = loader.load_and_split()
@@ -35,7 +39,6 @@ def settings():
         collection_name=collection_name,
         embedding=embeddings,
     )
-
 
     # The storage layer for the parent documents
     local_store = "local_docstore"
@@ -59,14 +62,12 @@ def settings():
         description="A guide to crop management by Indian Council of Agricultural Reasearch (ICAR). Your first place to search for crop managemt and fertilizer related queries",
     )
 
-
     search = GoogleSearchAPIWrapper()
     google_tool = Tool(
         name="Google Search",
         func=search.run,
         description="Use for when you need to perform an internet search to find information that another tool can not provide.",
     )
-
 
     tools = [
         google_tool,
@@ -80,7 +81,6 @@ def settings():
         temperature=0.5,
         # huggingfacehub_api_token=os.getenv("HUGGINGFACEHUB_API_TOKEN"),
     )
-
 
     template = """
     You are Sprouty, a friendly, helpful, and an expert farming AI assistant for farmers. 
@@ -112,9 +112,7 @@ def settings():
     """
     prompt_template = PromptTemplate.from_template(template)
 
-
     memory = ConversationBufferMemory(memory_key="chat_history")
-
 
     agent = create_react_agent(
         llm,
@@ -123,7 +121,6 @@ def settings():
         # stop_sequence=["Final Answer"],
         # stop_sequence=["Observation"],
     )
-
 
     agent_executor = AgentExecutor.from_agent_and_tools(
         # retrieval_qa_with_sources_chain,
@@ -135,6 +132,7 @@ def settings():
         max_iterations=10,
     )
     return agent_executor
+
 
 if __name__ == "__main__":
     agent_executor = settings()
